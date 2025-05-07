@@ -1,0 +1,7 @@
+azure-storage-file-datalake
+azure-ai-formrecognizer==3.3.0b1
+langchain
+openai
+tiktoken
+pymongo
+
