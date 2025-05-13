@@ -4,4 +4,10 @@ langchain
 openai
 tiktoken
 pymongo
-
+azure-search-documents
+semantic-kernel
+azure-ai-projects
+azure-identity
+streamlit
+essential-generators
+semchunk
