@@ -1,0 +1,9 @@
+{
+    "search_service_endpoint" : "<Path to AI Search Endpoint>",
+    "search_service_key":  "<AI Search Key>",
+    "search_index_name":  "<Index Name (e.g. test_index)>",
+    "vector_search_profile": "<Profile Name (e.g. test_search_profile)>",
+    "vector_search_algorithm_configuration_name": "<Algo Name (e.g. test_algo_config)>",
+    "data_schema_path": "<Path to Data Schema File in Schema Folder>",
+    "vector_dimension": 1536
+}

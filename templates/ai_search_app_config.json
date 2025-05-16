@@ -1,0 +1,7 @@
+{
+    "vector_storage_mode":"COGSEARCH", 
+    "LLM" : "AOAI",
+    "num_results_RAG": 10,
+    "vector_db_config_path" : "<Path to AI Search Config File>",
+    "llm_config_path" : "<Path to LLM Config File>"
+}

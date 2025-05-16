@@ -1,0 +1,7 @@
+{
+    "aoai_endpoint": "<AOAI Endpoint>",
+    "aoai_key": "<AOAI Key>",
+    "aoai_temperature": 0.5,
+    "aoai_api_version": "2025-01-01-preview",
+    "aoai_deployment_name": "<AOAI Deployment Name>"
+}

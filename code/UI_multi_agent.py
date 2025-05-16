@@ -1,7 +1,7 @@
 import streamlit as st
 from App import App
 from Utilities import Utils as Utils
-from essential_generators import DocumentGenerator
+
 import asyncio
 
 from semantic_kernel import Kernel
@@ -24,13 +24,11 @@ from semantic_kernel.contents import ChatHistoryTruncationReducer
 from semantic_kernel.functions import KernelFunctionFromPrompt
 from semantic_kernel.agents import AgentGroupChat, ChatCompletionAgent
 
-DO_INIT = True
-INSERT_DATA = True
-MODEL_FAMILY = "gpt-4"
+
+
 def main():  
     app = init_app()
-    if INSERT_DATA:
-        load_data(app)
+    
     
     init_streamlit_session_state(app)
     init_sidebar(app)
@@ -179,37 +177,19 @@ def init_semantic_kernel(app):
     init_agents(kernel,search_plugin)
     st.session_state["kernel"] = kernel
     return True
-def handle_question(question, app, history):
+def handle_question(user_input):
     #Add the message to the session state
-    message = {"role": "user", "content": question}
+    message = {"role": "user", "content": user_input}
     st.session_state["messages"].append(message)
     with st.chat_message("user"):
-        st.markdown(question)
-    # AI Search query - RAG lookup
-    if not st.session_state["semantic_kernel"]:   
-        handle_question_native(question, app, history)
-    else:
-        handle_question_semantic_kernel(question)
-def handle_question_semantic_kernel(question_with_prefix):
+        st.markdown(user_input)
+    handle_question_semantic_kernel(user_input)
+def handle_question_semantic_kernel(user_input):
     with st.spinner("Answering question..."):
         loop = asyncio.new_event_loop()
-        loop.run_until_complete(get_answer_from_agents(question_with_prefix))
+        loop.run_until_complete(get_answer_from_agents(user_input))
         loop.close()
-def handle_question_native(question_with_prefix, app, history):
-    with st.spinner("Searching for context..."):    
-        question_vector = app.llm_handler.generate_embeddings(question_with_prefix)
-        context = app.vector_db_handler.do_vector_search(question_vector)
-        context_map = Utils.get_context_map(context)
-        context_string = context_map["content"]
-    with st.spinner("Answering question..."):    
-        response = app.llm_handler.get_response_from_model(context_string, question_with_prefix, history)
-    response_message = {"role": "assistant", "content": response}
-    st.session_state["messages"].append(response_message)
-    with st.chat_message("assistant"):
-        st.markdown(response)
-        if not context_map == None and "filenames" in context_map:
-            if context_map["filenames"] != "":
-                st.markdown("RAG Context: " + context_map["filenames"])
+
 async def get_answer_from_agents(question):
     chat = st.session_state["agent_chat"]
     # Add the current user_input to the chat
@@ -264,35 +244,10 @@ def reset_chat():
     if st.session_state["messages"] != None:
         st.session_state["messages"] = []
         st.session_state["agent_chat"] = None
-def load_data(console_app):
-    input_directory = "C:\\Users\\dade\\Desktop\\Syneos\\PreRC\\PreRC regulation documents\\raginputdata"
-    file_list = Utils.list_files_in_dir(input_directory)
-    data_list = []
-    generator = DocumentGenerator()
-    for file in file_list:
-        filename_only = Utils.get_filename_only(file)
-        try:
-            with open(input_directory+"\\"+filename_only, mode="r", encoding='utf-8') as f:
-                doc = str(f.read())
-                chunks = Utils.get_semantic_chunks(doc, MODEL_FAMILY, chunk_size=2000)
-                for chunk in chunks:
-                    embedding = console_app.llm_handler.generate_embeddings(chunk)
-                    id = generator.guid()
-                    data = {
-                        "id": id,
-                        "filename": filename_only,
-                        "content": chunk,
-                        "contentVector": embedding
-                    }
-                    data_list.append(data)
-        except Exception as e:
-            print(f"Error processing file {filename_only}: {e}")
-    console_app.insert_data(data_list)
+
 def init_app():
     app_config_path = r"C:\Users\dade\Desktop\AzureRAG\config\ai_search_app_syneos.json"
     search_app = App(app_config_path)
-    if DO_INIT:
-        search_app.do_init()
     return search_app
 
 if __name__ == "__main__":

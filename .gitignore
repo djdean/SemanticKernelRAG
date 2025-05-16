@@ -162,4 +162,4 @@ cython_debug/
 #Config data
 config
 
-code/test.py
+code/*test*
